@@ -5,7 +5,7 @@
 Deploys 1 Un-Encrypted Managed Disk
 ===================================
 
-This Terraform module deploys a managed disk in Azure according to one of four available scenarios. Which scenario applies depends on the parameters that you provide.
+This Terraform module deploys a managed disk ([overview here](https://azure.microsoft.com/en-us/services/managed-disks/)) in Azure according to one of four available scenarios. Which scenario applies depends on the parameters that you provide.
 
 1. Empty disk  
    This is the default scenario. It is selected by providing none of ```source_uri```, ```source_resource_id``` or ```image_reference_id```. It will also be selected if more than one of them is provided.  
@@ -19,6 +19,7 @@ This Terraform module deploys a managed disk in Azure according to one of four a
 4. Import an existing image - a generalized OS disk image  
     This scenario is selected by providing ```image_reference_id```.  
 
+The size of the new managed disk must be specified for an empty disk. The available sizes are documented [here](https://azure.microsoft.com/en-us/pricing/details/managed-disks/). For other scenarios, specifying the size can resize the disk larger, but not smaller than the source.
 
 ## Here are examples of the four scenarios:
 
