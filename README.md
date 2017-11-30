@@ -7,18 +7,17 @@ Deploys 1 Un-Encrypted Managed Disk
 
 This Terraform module deploys a managed disk in Azure according to one of four available scenarios. Which scenario applies depends on the parameters that you provide.
 
-1. Copy an existing VHD  
+1. Empty disk  
+   This is the default scenario. It is selected by providing none of source_uri, source_resource_id or image_reference_id. It will also be selected if more than one of them is provided.  
+
+2. Copy an existing VHD  
    This can be either a specialized OS disk image or a data disk. The scenario is selected by providing source_uri.
 
-2. Copy an existing managed disk  
+3. Copy an existing managed disk  
     The scenario is selected by providing source_resource_id.
 
-3. Import an existing image - a generalized OS disk image  
-    This scenario is selected by providing image_reference_id.
-
-4. Empty disk  
-   This is the default scenario. It is selected by providing none of the above.  
-
+4. Import an existing image - a generalized OS disk image  
+    This scenario is selected by providing image_reference_id.  
 
 
 ## Here are examples of the four scenarios:
