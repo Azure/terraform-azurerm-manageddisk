@@ -1,30 +1,28 @@
-# terraform-azurerm-manageddisk #
+# terraform-azurerm-manageddisk
+
 [![Build Status](https://travis-ci.org/Azure/terraform-azurerm-manageddisk.svg?branch=master)](https://travis-ci.org/Azure/terraform-azurerm-manageddisk)
 
-
-Deploys 1 Un-Encrypted Managed Disk
-===================================
+## Deploys 1 Un-Encrypted Managed Disk
 
 This Terraform module deploys a managed disk ([overview here](https://azure.microsoft.com/en-us/services/managed-disks/)) in Azure according to one of four available scenarios. Which scenario applies depends on the parameters that you provide.
 
 1. Empty disk  
    This is the default scenario. It is selected by providing none of ```source_uri```, ```source_resource_id``` or ```image_reference_id```. It will also be selected if more than one of them is provided.  
 
-2. Copy an existing VHD  
+1. Copy an existing VHD  
    This can be either a specialized OS disk image or a data disk. The scenario is selected by providing ```source_uri```.
 
-3. Copy an existing managed disk  
+1. Copy an existing managed disk  
     The scenario is selected by providing ```source_resource_id```.
 
-4. Import an existing image - a generalized OS disk image  
+1. Import an existing image - a generalized OS disk image  
     This scenario is selected by providing ```image_reference_id```.  
 
 The size of the new managed disk must be specified for an empty disk. The available sizes are documented [here](https://azure.microsoft.com/en-us/pricing/details/managed-disks/). For other scenarios, specifying the size can resize the disk larger, but not smaller than the source.
 
-## Here are examples of the four scenarios:
+## Here are examples of the four scenarios
 
-Scenario 1: Empty Disk
-----------------------
+### Scenario 1: Empty Disk
 
 ```hcl
 resource "azurerm_resource_group" "diskRg" {
@@ -59,8 +57,7 @@ output "empty_disk_id" {
 }
 ```
 
-Scenario 2: Copy a VHD
-----------------------
+### Scenario 2: Copy a VHD
 
 ```hcl
 module "copyVHD" {
@@ -76,15 +73,14 @@ module "copyVHD" {
 }
 ```
 
-Scenario 3: Copy an Existing Managed Disk
------------------------------------------
+### Scenario 3: Copy an Existing Managed Disk
 
 ```hcl
 module "copyDisk" {
     source               = "./terraform-azurerm-manageddisk"
     managed_disk_name    = "myExistingDiskCopy"
     resource_group_name  = "${azurerm_resource_group.diskRg.name}"
- 
+
     # required - if provided instructs the module to copy the managed disk
     source_resource_id   = "/subscriptions/myAzureSubscriptionID/resourceGroups/myResourceGroupName/providers/Microsoft.Compute/disks/nameOfDisk"
 
@@ -93,8 +89,7 @@ module "copyDisk" {
 }
 ```
 
-Scenario 4: Copy an Image
------------------------------------------
+### Scenario 4: Copy an Image
 
 In this case, a platform image.
 
@@ -116,20 +111,89 @@ module "fromImage" {
 }
 ```
 
-Authors
-=======
+## Test
+
+### Configurations
+
+- [Configure Terraform for Azure](https://docs.microsoft.com/en-us/azure/virtual-machines/linux/terraform-install-configure)
+
+We provide 2 ways to build, run, and test the module on a local development machine. [Native (Mac/Linux)](#native-maclinux) or [Docker](#docker).
+
+### Native(Mac/Linux)
+
+#### Prerequisites
+
+- [Ruby **(~> 2.3)**](https://www.ruby-lang.org/en/downloads/)
+- [Bundler **(~> 1.15)**](https://bundler.io/)
+- [Terraform **(~> 0.11.7)**](https://www.terraform.io/downloads.html)
+- [Golang **(~> 1.10.3)**](https://golang.org/dl/)
+
+#### Environment setup
+
+We provide simple script to quickly set up module development environment:
+
+```sh
+$ curl -sSL https://raw.githubusercontent.com/Azure/terramodtest/master/tool/env_setup.sh | sudo bash
+```
+
+#### Run test
+
+Then simply run it in local shell:
+
+```sh
+$ cd $GOPATH/src/{directory_name}/
+$ bundle install
+$ rake build
+$ rake e2e
+```
+
+### Docker
+
+We provide a Dockerfile to build a new image based `FROM` the `microsoft/terraform-test` Docker hub image which adds additional tools / packages specific for this module (see Custom Image section).  Alternatively use only the `microsoft/terraform-test` Docker hub image [by using these instructions](https://github.com/Azure/terraform-test).
+
+#### Prerequisites
+
+- [Docker](https://www.docker.com/community-edition#/download)
+
+#### Custom Image
+
+This builds the custom image:
+
+```sh
+$ docker build --build-arg BUILD_ARM_SUBSCRIPTION_ID=$ARM_SUBSCRIPTION_ID --build-arg BUILD_ARM_CLIENT_ID=$ARM_CLIENT_ID --build-arg BUILD_ARM_CLIENT_SECRET=$ARM_CLIENT_SECRET --build-arg BUILD_ARM_TENANT_ID=$ARM_TENANT_ID -t azure-manageddisk .
+```
+
+This runs the build and unit tests:
+
+```sh
+$ docker run --rm azure-manageddisk /bin/bash -c "bundle install && rake build"
+```
+
+This runs the end to end tests:
+
+```sh
+$ docker run --rm azure-manageddisk /bin/bash -c "bundle install && rake e2e"
+```
+
+This runs the full tests:
+
+```sh
+$ docker run --rm azure-manageddisk /bin/bash -c "bundle install && rake full"
+```
+
+## Authors
+
 Originally created by [Greg Oliver](http://github.com/sebastus)
 
-License
-=======
+## License
 
 [MIT](LICENSE)
 
-# Contributing
+## Contributing
 
 This project welcomes contributions and suggestions.  Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.microsoft.com.
+the rights to use your contribution. For details, visit [https://cla.microsoft.com](https://cla.microsoft.com).
 
 When you submit a pull request, a CLA-bot will automatically determine whether you need to provide
 a CLA and decorate the PR appropriately (e.g., label, comment). Simply follow the instructions
