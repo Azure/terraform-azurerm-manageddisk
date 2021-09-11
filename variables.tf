@@ -45,7 +45,7 @@ variable "disk_size_gb" {
 
 variable "tags" {
   description = "The tags to associate with your managed disk."
-  type        = "map"
+  type        = map
 
   default = {
     tag1 = ""
